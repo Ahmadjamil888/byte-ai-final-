@@ -15,9 +15,9 @@
   --heat-100: #fa5d19;
   --heat-200: #ff6600;
   
-  /* Accent colors */
-  --accent-black: #262626;
-  --accent-white: #ffffff;
+  /* Accent colors - Swapped for black theme */
+  --accent-black: #ffffff;
+  --accent-white: #000000;
   --accent-amethyst: #9061ff;
   --accent-bluetron: #2a6dfb;
   --accent-crimson: #eb3424;
@@ -48,23 +48,23 @@
   --white-alpha-56: rgba(255, 255, 255, 0.561);
   --white-alpha-72: rgba(255, 255, 255, 0.722);
   
-  /* Border colors */
-  --border-faint: #ededed;
-  --border-muted: #e8e8e8;
-  --border-loud: #e6e6e6;
+  /* Border colors - Changed for black theme */
+  --border-faint: #333333;
+  --border-muted: #444444;
+  --border-loud: #555555;
   
   /* Illustration colors */
   --illustrations-faint: #ededed;
   --illustrations-muted: #e6e6e6;
   --illustrations-default: #dbdbdb;
   
-  /* Background colors */
-  --background-lighter: #fbfbfb;
-  --background-base: #f9f9f9;
+  /* Background colors - Changed to black theme */
+  --background-lighter: #1a1a1a;
+  --background-base: #000000;
   
-  /* Foreground colors */
-  --foreground: #262626;
-  --foreground-dimmer: rgba(38, 38, 38, 0.722);
+  /* Foreground colors - Changed for black theme */
+  --foreground: #ffffff;
+  --foreground-dimmer: rgba(255, 255, 255, 0.722);
 }
 
 /* P3 color space enhancement for supported browsers */
@@ -84,9 +84,9 @@
     --heat-100: color(display-p3 0.980392 0.364706 0.098039 / 1.000000);
     --heat-200: color(display-p3 1.000000 0.400000 0.000000 / 1.000000);
     
-    /* Accent colors */
-    --accent-black: color(display-p3 0.149020 0.149020 0.149020 / 1.000000);
-    --accent-white: color(display-p3 1.000000 1.000000 1.000000 / 1.000000);
+    /* Accent colors - Swapped for black theme */
+    --accent-black: color(display-p3 1.000000 1.000000 1.000000 / 1.000000);
+    --accent-white: color(display-p3 0.000000 0.000000 0.000000 / 1.000000);
     --accent-amethyst: color(display-p3 0.564706 0.380392 1.000000 / 1.000000);
     --accent-bluetron: color(display-p3 0.164706 0.427451 0.984314 / 1.000000);
     --accent-crimson: color(display-p3 0.921569 0.203922 0.141176 / 1.000000);
@@ -117,19 +117,19 @@
     --white-alpha-56: color(display-p3 1.000000 1.000000 1.000000 / 0.560784);
     --white-alpha-72: color(display-p3 1.000000 1.000000 1.000000 / 0.721569);
     
-    /* Border colors */
-    --border-faint: color(display-p3 0.929412 0.929412 0.929412 / 1.000000);
-    --border-muted: color(display-p3 0.909804 0.909804 0.909804 / 1.000000);
-    --border-loud: color(display-p3 0.901961 0.901961 0.901961 / 1.000000);
+    /* Border colors - Changed for black theme */
+    --border-faint: color(display-p3 0.200000 0.200000 0.200000 / 1.000000);
+    --border-muted: color(display-p3 0.266667 0.266667 0.266667 / 1.000000);
+    --border-loud: color(display-p3 0.333333 0.333333 0.333333 / 1.000000);
     
     /* Illustration colors */
     --illustrations-faint: color(display-p3 0.929412 0.929412 0.929412 / 1.000000);
     --illustrations-muted: color(display-p3 0.901961 0.901961 0.901961 / 1.000000);
     --illustrations-default: color(display-p3 0.858824 0.858824 0.858824 / 1.000000);
     
-    /* Background colors */
-    --background-lighter: color(display-p3 0.984314 0.984314 0.984314 / 1.000000);
-    --background-base: color(display-p3 0.976471 0.976471 0.976471 / 1.000000);
+    /* Background colors - Changed to black theme */
+    --background-lighter: color(display-p3 0.101961 0.101961 0.101961 / 1.000000);
+    --background-base: color(display-p3 0.000000 0.000000 0.000000 / 1.000000);
   }
 }
 

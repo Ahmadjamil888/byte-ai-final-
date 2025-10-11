@@ -1129,8 +1129,8 @@ Tip: I automatically detect and install npm packages from your code imports (lik
         <div className="absolute inset-0 flex overflow-hidden">
           {/* File Explorer - Hide during edits */}
           {!generationProgress.isEdit && (
-            <div className="w-[250px] border-r border-gray-200 bg-white flex flex-col flex-shrink-0">
-            <div className="p-4 bg-gray-100 text-gray-900 flex items-center justify-between">
+            <div className="w-[250px] border-r border-orange-500/30 bg-gray-900 flex flex-col flex-shrink-0">
+            <div className="p-4 bg-gray-800 text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <BsFolderFill style={{ width: '16px', height: '16px' }} />
                 <span className="text-sm font-medium">Explorer</span>
@@ -1142,7 +1142,7 @@ Tip: I automatically detect and install npm packages from your code imports (lik
               <div className="text-sm">
                 {/* Root app folder */}
                 <div 
-                  className="flex items-center gap-2 py-0.5 px-3 hover:bg-gray-100 rounded cursor-pointer text-gray-700"
+                  className="flex items-center gap-2 py-0.5 px-3 hover:bg-gray-700 rounded cursor-pointer text-gray-300"
                   onClick={() => toggleFolder('app')}
                 >
                   {expandedFolders.has('app') ? (
@@ -1188,7 +1188,7 @@ Tip: I automatically detect and install npm packages from your code imports (lik
                         <div key={dir} className="mb-1">
                           {dir && (
                             <div 
-                              className="flex items-center gap-2 py-0.5 px-3 hover:bg-gray-100 rounded cursor-pointer text-gray-700"
+                              className="flex items-center gap-2 py-0.5 px-3 hover:bg-gray-700 rounded cursor-pointer text-gray-300"
                               onClick={() => toggleFolder(dir)}
                             >
                               {expandedFolders.has(dir) ? (
@@ -1215,8 +1215,8 @@ Tip: I automatically detect and install npm packages from your code imports (lik
                                     key={fullPath} 
                                     className={`flex items-center gap-2 py-0.5 px-3 rounded cursor-pointer transition-all ${
                                       isSelected 
-                                        ? 'bg-blue-500 text-white' 
-                                        : 'text-gray-700 hover:bg-gray-100'
+                                        ? 'bg-orange-600 text-white' 
+                                        : 'text-gray-300 hover:bg-gray-700'
                                     }`}
                                     onClick={() => handleFileClick(fullPath)}
                                   >
@@ -1339,8 +1339,8 @@ Tip: I automatically detect and install npm packages from your code imports (lik
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-black border border-gray-200 rounded-lg overflow-hidden">
-                      <div className="px-4 py-2 bg-gray-100 text-gray-900 flex items-center justify-between">
+                    <div className="bg-gray-900 border border-orange-500/30 rounded-lg overflow-hidden">
+                      <div className="px-4 py-2 bg-gray-800 text-white flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="w-5 h-5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
                           <span className="font-mono text-sm">Streaming code...</span>
@@ -1409,7 +1409,7 @@ Tip: I automatically detect and install npm packages from your code imports (lik
                     
                     {/* Show completed files */}
                     {generationProgress.files.map((file, idx) => (
-                      <div key={idx} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                      <div key={idx} className="bg-gray-900 border border-orange-500/30 rounded-lg overflow-hidden">
                         <div className="px-4 py-2 bg-[#36322F] text-white flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <span className="text-green-500">✓</span>
@@ -1588,7 +1588,7 @@ Tip: I automatically detect and install npm packages from your code imports (lik
             
             {/* Package installation overlay - shows when installing packages or applying code */}
             {codeApplicationState.stage && codeApplicationState.stage !== 'complete' && (
-              <div className="absolute inset-0 bg-white/95 backdrop-blur-sm flex items-center justify-center z-10">
+              <div className="absolute inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center z-10">
                 <div className="text-center max-w-md">
                   <div className="mb-6">
                     {/* Animated icon based on stage */}
@@ -1602,7 +1602,7 @@ Tip: I automatically detect and install npm packages from your code imports (lik
                     ) : null}
                   </div>
                   
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg font-semibold text-white mb-2">
                     {codeApplicationState.stage === 'analyzing' && 'Analyzing code...'}
                     {codeApplicationState.stage === 'installing' && 'Installing packages...'}
                     {codeApplicationState.stage === 'applying' && 'Applying changes...'}
@@ -1617,8 +1617,8 @@ Tip: I automatically detect and install npm packages from your code imports (lik
                             key={index}
                             className={`px-2 py-1 text-xs rounded-full transition-all ${
                               codeApplicationState.installedPackages?.includes(pkg)
-                                ? 'bg-green-100 text-green-700'
-                                : 'bg-gray-100 text-gray-600'
+                                ? 'bg-green-900 text-green-300'
+                                : 'bg-gray-800 text-gray-400'
                             }`}
                           >
                             {pkg}
@@ -1664,7 +1664,7 @@ Tip: I automatically detect and install npm packages from your code imports (lik
                   iframeRef.current.src = newSrc;
                 }
               }}
-              className="absolute bottom-4 right-4 bg-white/90 hover:bg-white text-gray-700 p-2 rounded-lg shadow-lg transition-all duration-200 hover:scale-105"
+              className="absolute bottom-4 right-4 bg-gray-800/90 hover:bg-gray-800 text-white p-2 rounded-lg shadow-lg transition-all duration-200 hover:scale-105 border border-orange-500/30"
               title="Refresh sandbox"
             >
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1677,7 +1677,7 @@ Tip: I automatically detect and install npm packages from your code imports (lik
       
       // Default state when no sandbox and no screenshot
       return (
-        <div className="flex items-center justify-center h-full bg-gray-50 text-gray-600 text-lg">
+        <div className="flex items-center justify-center h-full bg-gray-900 text-gray-400 text-lg">
           {screenshotError ? (
             <div className="text-center">
               <p className="mb-2">Failed to capture screenshot</p>
@@ -3072,8 +3072,8 @@ Focus on the key sections and content, making it clean and modern.`;
 
   return (
     <HeaderProvider>
-      <div className="font-sans bg-background text-foreground h-screen flex flex-col">
-      <div className="bg-white py-[15px] py-[8px] border-b border-border-faint flex items-center justify-between shadow-sm">
+      <div className="font-sans bg-black text-white h-screen flex flex-col">
+      <div className="bg-gray-900 py-[15px] py-[8px] border-b border-orange-500/30 flex items-center justify-between shadow-sm">
         <HeaderBrandKit />
         <div className="flex items-center gap-2">
           {/* Model Selector - Left side */}
@@ -3089,7 +3089,7 @@ Focus on the key sections and content, making it clean and modern.`;
               }
               router.push(`/generation?${params.toString()}`);
             }}
-            className="px-3 py-1.5 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-300 transition-colors"
+            className="px-3 py-1.5 text-sm text-white bg-gray-800 border border-orange-500/30 rounded-lg focus:outline-none focus:border-orange-500 transition-colors"
           >
             {appConfig.ai.availableModels.map(model => (
               <option key={model} value={model}>
@@ -3099,7 +3099,7 @@ Focus on the key sections and content, making it clean and modern.`;
           </select>
           <button 
             onClick={() => createSandbox()}
-            className="p-8 rounded-lg transition-colors bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100"
+            className="p-8 rounded-lg transition-colors bg-gray-800 border border-orange-500/30 text-white hover:bg-gray-700"
             title="Create new sandbox"
           >
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -3108,7 +3108,7 @@ Focus on the key sections and content, making it clean and modern.`;
           </button>
           <button 
             onClick={reapplyLastGeneration}
-            className="p-8 rounded-lg transition-colors bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-8 rounded-lg transition-colors bg-gray-800 border border-orange-500/30 text-white hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
             title="Re-apply last generation"
             disabled={!conversationContext.lastGeneratedCode || !sandboxData}
           >
@@ -3119,7 +3119,7 @@ Focus on the key sections and content, making it clean and modern.`;
           <button 
             onClick={downloadZip}
             disabled={!sandboxData}
-            className="p-8 rounded-lg transition-colors bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-8 rounded-lg transition-colors bg-gray-800 border border-orange-500/30 text-white hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
             title="Download your Vite app as ZIP"
           >
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -3188,7 +3188,7 @@ Focus on the key sections and content, making it clean and modern.`;
                           href={sourceURL} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="text-black hover:text-gray-700 truncate max-w-[250px] font-medium"
+                          className="text-white hover:text-gray-300 truncate max-w-[250px] font-medium"
                           title={sourceURL}
                         >
                           {siteName}
@@ -3244,7 +3244,7 @@ Focus on the key sections and content, making it clean and modern.`;
                     <div className="block">
                       <div className={`block rounded-[10px] px-14 py-8 ${
                         msg.type === 'user' ? 'bg-[#36322F] text-white ml-auto max-w-[80%]' :
-                        msg.type === 'ai' ? 'bg-gray-100 text-gray-900 mr-auto max-w-[80%]' :
+                        msg.type === 'ai' ? 'bg-gray-800 text-white mr-auto max-w-[80%]' :
                         msg.type === 'system' ? 'bg-[#36322F] text-white text-sm' :
                         msg.type === 'command' ? 'bg-[#36322F] text-white font-mono text-sm' :
                         msg.type === 'error' ? 'bg-red-900 text-red-100 text-sm border border-red-700' :
@@ -3284,8 +3284,8 @@ Focus on the key sections and content, making it clean and modern.`;
                   
                       {/* Show applied files if this is an apply success message */}
                       {msg.metadata?.appliedFiles && msg.metadata.appliedFiles.length > 0 && (
-                    <div className="mt-3 inline-block bg-gray-100 rounded-[10px] p-5">
-                      <div className="text-xs font-medium mb-3 text-gray-700">
+                    <div className="mt-3 inline-block bg-gray-800 rounded-[10px] p-5">
+                      <div className="text-xs font-medium mb-3 text-gray-300">
                         {msg.content.includes('Applied') ? 'Files Updated:' : 'Generated Files:'}
                       </div>
                       <div className="flex flex-wrap items-start gap-2">
@@ -3318,7 +3318,7 @@ Focus on the key sections and content, making it clean and modern.`;
                   
                       {/* Show generated files for completion messages - but only if no appliedFiles already shown */}
                       {isGenerationComplete && generationProgress.files.length > 0 && idx === chatMessages.length - 1 && !msg.metadata?.appliedFiles && !chatMessages.some(m => m.metadata?.appliedFiles) && (
-                    <div className="mt-2 inline-block bg-gray-100 rounded-[10px] p-3">
+                    <div className="mt-2 inline-block bg-gray-800 rounded-[10px] p-3">
                       <div className="text-xs font-medium mb-1 text-gray-700">Generated Files:</div>
                       <div className="flex flex-wrap items-start gap-1">
                         {generationProgress.files.map((file, fileIdx) => (

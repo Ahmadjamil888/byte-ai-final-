@@ -26,8 +26,8 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Open Lovable v2",
-  description: "Re-imagine any website in seconds with AI-powered website builder.",
+  title: "Byte AI - Your Full-Time AI Developer",
+  description: "Transform ideas into code with intelligent automation. Built by Zehanx Technologies.",
 };
 
 export default function RootLayout({

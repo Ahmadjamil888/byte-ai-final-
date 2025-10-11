@@ -1,6 +1,6 @@
-# Open Lovable
+# Byte AI
 
-Chat with AI to build React apps instantly. An example app made by the [Firecrawl](https://firecrawl.dev/?ref=open-lovable-github) team. For a complete cloud solution, check out [Lovable.dev](https://lovable.dev/) ❤️.
+Your full-time AI developer. Chat with AI to build React apps instantly. Made by [Zehanx Technologies](https://zehanxtech.com) - transforming ideas into code with intelligent automation.
 
 <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExODAwZGJzcDVmZGYxc3MyNDUycTliYnAwem1qbzhtNHh0c2JrNDdmZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/LMYzMkNmOecj3yFw81/giphy.gif" alt="Open Lovable Demo" width="100%"/>
 
@@ -8,8 +8,8 @@ Chat with AI to build React apps instantly. An example app made by the [Firecraw
 
 1. **Clone & Install**
 ```bash
-git clone https://github.com/firecrawl/open-lovable.git
-cd open-lovable
+git clone https://github.com/zehanxtech/byte-ai.git
+cd byte-ai
 pnpm install  # or npm install / yarn install
 ```
 

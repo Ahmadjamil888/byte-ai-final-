@@ -26,7 +26,9 @@ import HeaderBrandKit from "@/components/shared/header/BrandKit/BrandKit";
 import HeaderWrapper from "@/components/shared/header/Wrapper/Wrapper";
 import HeaderDropdownWrapper from "@/components/shared/header/Dropdown/Wrapper/Wrapper";
 import GithubIcon from "@/components/shared/header/Github/_svg/GithubIcon";
-import ButtonUI from "@/components/ui/shadcn/button"
+import ButtonUI from "@/components/ui/shadcn/button";
+import ByteAIIcon from "@/components/ByteAIIcon";
+import ByteAILogo from "@/components/ByteAILogo";
 
 interface SearchResult {
   url: string;
@@ -199,11 +201,11 @@ export default function HomePage() {
 
   return (
     <HeaderProvider>
-      <div className="min-h-screen bg-background-base">
+      <div className="min-h-screen bg-black">
         {/* Header/Navigation Section */}
         <HeaderDropdownWrapper />
 
-        <div className="sticky top-0 left-0 w-full z-[101] bg-background-base header">
+        <div className="sticky top-0 left-0 w-full z-[101] bg-black header">
           <div className="absolute top-0 cmw-container border-x border-border-faint h-full pointer-events-none" />
           <div className="h-1 bg-border-faint w-full left-0 -bottom-1 absolute" />
           <div className="cmw-container absolute h-full pointer-events-none top-0">
@@ -219,12 +221,12 @@ export default function HomePage() {
               <div className="flex gap-8">
                 <a
                   className="contents"
-                  href="https://github.com/mendableai/open-lovable"
+                  href="https://zehanxtech.com"
                   target="_blank"
                 >
                   <ButtonUI variant="tertiary">
-                    <GithubIcon />
-                    Use this Template
+                    <ByteAIIcon className="w-4 h-4" />
+                    Zehanx Technologies
                   </ButtonUI>
                 </a>
               </div>
@@ -243,15 +245,15 @@ export default function HomePage() {
             <div className="relative container px-16">
               <HomeHeroBadge />
               <HomeHeroTitle />
-              <p className="text-center text-body-large">
-                Re-imagine any website, in seconds.
+              <p className="text-center text-body-large text-white">
+                Your full-time AI developer. Transform ideas into code instantly.
               </p>
               <Link
-                className="bg-black-alpha-4 hover:bg-black-alpha-6 rounded-6 px-8 lg:px-6 text-label-large h-30 lg:h-24 block mt-8 mx-auto w-max gap-4 transition-all"
-                href="#"
-                onClick={(e) => e.preventDefault()}
+                className="bg-orange-600 hover:bg-orange-700 rounded-6 px-8 lg:px-6 text-label-large h-30 lg:h-24 block mt-8 mx-auto w-max gap-4 transition-all text-white flex items-center"
+                href="https://zehanxtech.com"
+                target="_blank"
               >
-                Powered by Firecrawl.
+                Built by Zehanx Technologies
               </Link>
             </div>
           </div>
@@ -269,122 +271,69 @@ export default function HomePage() {
             <div className="max-w-552 mx-auto z-[11] lg:z-[2]">
               <div className="rounded-20 -mt-30 lg:-mt-30">
                 <div
-                  className="bg-white rounded-20"
+                  className="bg-gray-900 border border-orange-500/30 rounded-20"
                   style={{
                     boxShadow:
-                      "0px 0px 44px 0px rgba(0, 0, 0, 0.02), 0px 88px 56px -20px rgba(0, 0, 0, 0.03), 0px 56px 56px -20px rgba(0, 0, 0, 0.02), 0px 32px 32px -20px rgba(0, 0, 0, 0.03), 0px 16px 24px -12px rgba(0, 0, 0, 0.03), 0px 0px 0px 1px rgba(0, 0, 0, 0.05), 0px 0px 0px 10px #F9F9F9",
+                      "0px 0px 44px 0px rgba(255, 102, 0, 0.1), 0px 88px 56px -20px rgba(255, 102, 0, 0.05), 0px 56px 56px -20px rgba(255, 102, 0, 0.03), 0px 32px 32px -20px rgba(255, 102, 0, 0.05), 0px 16px 24px -12px rgba(255, 102, 0, 0.05), 0px 0px 0px 1px rgba(255, 102, 0, 0.2)",
                   }}
                 >
 
-                <div className="p-16 flex gap-12 items-center w-full relative bg-white rounded-20">
-                  {/* Show different UI when search results are displayed */}
-                  {hasSearched && searchResults.length > 0 && !isFadingOut ? (
-                    <>
-                      {/* Selection mode icon */}
+                <div className="p-16 flex flex-col gap-12 w-full relative bg-gray-900 rounded-20">
+                  {/* Main Prompt Input */}
+                  <div className="flex gap-12 items-start">
+                    <svg 
+                      width="20" 
+                      height="20" 
+                      viewBox="0 0 20 20" 
+                      fill="none" 
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="text-orange-500 flex-shrink-0 mt-2"
+                    >
+                      <path d="M5 5H15M5 10H15M5 15H10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                    <textarea
+                      className="flex-1 bg-transparent text-body-input text-white placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-transparent resize-none min-h-[60px]"
+                      placeholder="Describe what you want to build... (e.g., 'Create a modern landing page for a tech startup with hero section, features, and contact form')"
+                      value={url}
+                      disabled={isSearching}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setUrl(value);
+                        setIsValidUrl(validateUrl(value));
+                        // Reset search state when input changes
+                        if (value.trim() === "") {
+                          setShowSearchTiles(false);
+                          setHasSearched(false);
+                          setSearchResults([]);
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && e.ctrlKey && !isSearching) {
+                          e.preventDefault();
+                          handleSubmit();
+                        }
+                      }}
+                    />
+                  </div>
+                  
+                  {/* URL Input Section */}
+                  <div className="border-t border-gray-700 pt-12">
+                    <div className="flex gap-12 items-center">
                       <svg 
                         width="20" 
                         height="20" 
                         viewBox="0 0 20 20" 
                         fill="none" 
                         xmlns="http://www.w3.org/2000/svg"
-                        className="opacity-40 flex-shrink-0"
+                        className="text-orange-500 flex-shrink-0"
                       >
-                        <rect x="2" y="4" width="7" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-                        <rect x="11" y="4" width="7" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-                        <rect x="2" y="11" width="7" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/>
-                        <rect x="11" y="11" width="7" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+                        <path d="M10 2L3 7V18H7V13H13V18H17V7L10 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      
-                      {/* Selection message */}
-                      <div className="flex-1 text-body-input text-accent-black">
-                        Select which site to clone from the results below
-                      </div>
-                      
-                      {/* Search again button */}
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setIsFadingOut(true);
-                          setTimeout(() => {
-                            setSearchResults([]);
-                            setHasSearched(false);
-                            setShowSearchTiles(false);
-                            setIsFadingOut(false);
-                            setUrl('');
-                          }, 500);
-                        }}
-                        className="button relative rounded-10 px-12 py-8 text-label-medium font-medium flex items-center justify-center gap-6 bg-gray-100 hover:bg-gray-200 text-gray-700 active:scale-[0.995] transition-all"
-                      >
-                        <svg 
-                          width="16" 
-                          height="16" 
-                          viewBox="0 0 16 16" 
-                          fill="none" 
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="opacity-60"
-                        >
-                          <path d="M14 14L10 10M11 6.5C11 9 9 11 6.5 11C4 11 2 9 2 6.5C2 4 4 2 6.5 2C9 2 11 4 11 6.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                        </svg>
-                        <span>Search Again</span>
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      {isURL(url) ? (
-                        // Scrape icon for URLs
-                        <svg 
-                          width="20" 
-                          height="20" 
-                          viewBox="0 0 20 20" 
-                          fill="none" 
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="opacity-40 flex-shrink-0"
-                        >
-                          <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-                          <path d="M7 10L9 12L13 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      ) : (
-                        // Search icon for search terms
-                        <svg 
-                          width="20" 
-                          height="20" 
-                          viewBox="0 0 20 20" 
-                          fill="none" 
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="opacity-40 flex-shrink-0"
-                        >
-                          <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/>
-                          <path d="M12.5 12.5L16.5 16.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                        </svg>
-                      )}
                       <input
-                        className="flex-1 bg-transparent text-body-input text-accent-black placeholder:text-black-alpha-48 focus:outline-none focus:ring-0 focus:border-transparent"
-                        placeholder="Enter URL or search term..."
+                        className="flex-1 bg-transparent text-body-input text-white placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-transparent"
+                        placeholder="Reference URL (optional) - e.g., https://example.com"
                         type="text"
-                        value={url}
                         disabled={isSearching}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setUrl(value);
-                          setIsValidUrl(validateUrl(value));
-                          // Reset search state when input changes
-                          if (value.trim() === "") {
-                            setShowSearchTiles(false);
-                            setHasSearched(false);
-                            setSearchResults([]);
-                          }
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && !isSearching) {
-                            e.preventDefault();
-                            handleSubmit();
-                          }
-                        }}
-                        onFocus={() => {
-                          if (url.trim() && !isURL(url) && searchResults.length > 0) {
-                            setShowSearchTiles(true);
-                          }
-                        }}
                       />
                       <div
                         onClick={(e) => {
@@ -395,14 +344,15 @@ export default function HomePage() {
                         }}
                         className={isSearching ? 'pointer-events-none' : ''}
                       >
-                        <HeroInputSubmitButton 
-                          dirty={url.length > 0} 
-                          buttonText={isURL(url) ? 'Scrape Site' : 'Search'} 
-                          disabled={isSearching}
-                        />
+                        <button className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-lg font-medium transition-all flex items-center gap-2">
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 8L8 2L2 8M8 2V14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          Generate
+                        </button>
                       </div>
-                    </>
-                  )}
+                    </div>
+                  </div>
                 </div>
 
 

@@ -90,7 +90,7 @@ declare global {
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, model = 'openai/gpt-oss-20b', context, isEdit = false } = await request.json();
+    const { prompt, model = appConfig.ai.defaultModel, context, isEdit = false } = await request.json();
     
     console.log('[generate-ai-code-stream] Received request:');
     console.log('[generate-ai-code-stream] - prompt:', prompt);
@@ -1216,11 +1216,10 @@ MORPH FAST APPLY MODE (EDIT-ONLY):
         const isAnthropic = model.startsWith('anthropic/');
         const isGoogle = model.startsWith('google/');
         const isOpenAI = model.startsWith('openai/');
-        const isKimiGroq = model === 'moonshotai/kimi-k2-instruct-0905';
+        const isGroq = model.startsWith('groq/') || model === 'moonshotai/kimi-k2-instruct-0905';
         const modelProvider = isAnthropic ? anthropic : 
                               (isOpenAI ? openai : 
-                              (isGoogle ? googleGenerativeAI : 
-                              (isKimiGroq ? groq : groq)));
+                              (isGoogle ? googleGenerativeAI : groq));
         
         // Fix model name transformation for different providers
         let actualModel: string;
@@ -1228,13 +1227,20 @@ MORPH FAST APPLY MODE (EDIT-ONLY):
           actualModel = model.replace('anthropic/', '');
         } else if (isOpenAI) {
           actualModel = model.replace('openai/', '');
-        } else if (isKimiGroq) {
-          // Kimi on Groq - use full model string
-          actualModel = 'moonshotai/kimi-k2-instruct-0905';
         } else if (isGoogle) {
           // Google uses specific model names - convert our naming to theirs  
           actualModel = model.replace('google/', '');
+        } else if (isGroq) {
+          // Groq models - handle both groq/ prefix and special cases
+          if (model.startsWith('groq/')) {
+            actualModel = model.replace('groq/', '');
+          } else if (model === 'moonshotai/kimi-k2-instruct-0905') {
+            actualModel = 'moonshotai/kimi-k2-instruct-0905';
+          } else {
+            actualModel = model;
+          }
         } else {
+          // Default to Groq for unknown models
           actualModel = model;
         }
 
