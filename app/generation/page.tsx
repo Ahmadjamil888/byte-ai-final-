@@ -27,6 +27,7 @@ import CodeApplicationProgress, { type CodeApplicationState } from '@/components
 import UserProgressDisplay from '@/components/UserProgressDisplay';
 import LimitReachedModal from '@/components/LimitReachedModal';
 import AIModelSelector from '@/components/AIModelSelector';
+import AIModelSelector from '@/components/AIModelSelector';
 
 interface SandboxData {
   sandboxId: string;
@@ -97,6 +98,23 @@ function AISandboxPage() {
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [limitMessage, setLimitMessage] = useState('');
   const [userProgress, setUserProgress] = useState<any>(null);
+  
+  // Handle project selection from dashboard
+  const handleProjectSelect = (project: any) => {
+    if (project.sandboxId && project.url) {
+      setSandboxData({
+        sandboxId: project.sandboxId,
+        url: project.url
+      });
+      updateStatus('Project loaded', true);
+      addChatMessage(`Loaded project: ${project.name}`, 'system');
+      
+      // Update iframe
+      if (iframeRef.current) {
+        iframeRef.current.src = project.url;
+      }
+    }
+  };
   
   const [conversationContext, setConversationContext] = useState<{
     scrapedWebsites: Array<{ url: string; content: any; timestamp: Date }>;
@@ -586,7 +604,26 @@ Tip: I automatically detect and install npm packages from your code imports (lik
           }
         }, 100);
         
-        // Progress display no longer needed
+        // Save project to user's projects
+        try {
+          const projectName = homeUrlInput ? 
+            `Clone of ${homeUrlInput.replace(/^https?:\/\//, '').split('/')[0]}` : 
+            `App ${new Date().toLocaleDateString()}`;
+          
+          await fetch('/api/user-projects', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: projectName,
+              description: homeContextInput || 'Generated application',
+              sandboxId: data.sandboxId,
+              url: data.url,
+              planUsed: userProgress?.subscriptionStatus || 'free'
+            })
+          });
+        } catch (error) {
+          console.error('Failed to save project:', error);
+        }
         
         // Return the sandbox data so it can be used immediately
         return data;
@@ -3128,22 +3165,7 @@ Focus on the key sections and content, making it clean and modern.`;
         <div className="flex items-center gap-2">
           {/* User Progress Display */}
           <UserProgressDisplay 
-            onProjectSelect={(project) => {
-              // Load project into current session
-              if (project.sandboxId && project.url) {
-                setSandboxData({
-                  sandboxId: project.sandboxId,
-                  url: project.url
-                });
-                updateStatus('Project loaded', true);
-                addChatMessage(`Loaded project: ${project.name}`, 'system');
-                
-                // Update iframe
-                if (iframeRef.current) {
-                  iframeRef.current.src = project.url;
-                }
-              }
-            }}
+            onProjectSelect={handleProjectSelect}
           />
           
           {/* Sandbox URL Display - Show when sandbox is available */}
@@ -3174,8 +3196,8 @@ Focus on the key sections and content, making it clean and modern.`;
           
           {/* AI Model Selector */}
           <AIModelSelector
-            value={aiModel}
-            onChange={(newModel) => {
+            selectedModel={aiModel}
+            onModelChange={(newModel) => {
               setAiModel(newModel);
               const params = new URLSearchParams(searchParams);
               params.set('model', newModel);

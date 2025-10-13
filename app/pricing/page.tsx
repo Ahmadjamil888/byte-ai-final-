@@ -1,6 +1,6 @@
 'use client';
 
-import { PricingTable } from '@clerk/nextjs';
+import { usicingTable } from '@clerk/nextjs';
 import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { clerkTheme } from '@/lib/clerk-theme';
 import BlackHoleBackground from '@/components/BlackHoleBackground';

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth, clerkClient } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs/server';
+import { clerkClient } from '@clerk/nextjs/server';
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,18 +10,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { planId } = await req.json();
+    const { plan } = await req.json();
 
-    if (!planId || !['free', 'pro', 'premium'].includes(planId)) {
-      return NextResponse.json({ error: 'Invalid plan ID' }, { status: 400 });
+    if (!['free', 'pro', 'premium'].includes(plan)) {
+      return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
     }
 
-    // In test mode, we just update the user's metadata to simulate the plan change
     const client = await clerkClient();
     const user = await client.users.getUser(userId);
     
-    // Update user's public metadata to reflect the new plan
-    const progress = user.publicMetadata?.progress as any || {
+    // Update user's public metadata to reflect new plan
+    const currentProgress = user.publicMetadata?.progress || {
       userId,
       totalAppsGenerated: 0,
       currentPlanAppsGenerated: 0,
@@ -29,9 +29,9 @@ export async function POST(req: NextRequest) {
 
     // Reset monthly counter when upgrading
     const updatedProgress = {
-      ...progress,
-      subscriptionStatus: planId,
-      currentPlanAppsGenerated: 0, // Reset monthly counter
+      ...currentProgress,
+      subscriptionStatus: plan,
+      currentPlanAppsGenerated: 0 // Reset monthly counter
     };
 
     await client.users.updateUserMetadata(userId, {
@@ -41,9 +41,23 @@ export async function POST(req: NextRequest) {
       }
     });
 
+    // Also update Clerk's organization membership to simulate subscription
+    // This is for testing purposes - in production, this would be handled by Stripe webhooks
+    try {
+      await client.users.updateUser(userId, {
+        publicMetadata: {
+          ...user.publicMetadata,
+          testPlan: plan // Add test plan for simulation
+        }
+      });
+    } catch (error) {
+      console.error('Failed to update test plan:', error);
+    }
+
     return NextResponse.json({ 
       success: true, 
-      message: `Successfully upgraded to ${planId} plan (Test Mode)`,
+      plan,
+      message: `Successfully upgraded to ${plan} plan (TEST MODE)`,
       progress: updatedProgress
     });
   } catch (error) {

@@ -1371,7 +1371,7 @@ It's better to have 3 complete files than 10 incomplete files.`
               // Final error, send to user
               await sendProgress({ 
                 type: 'error', 
-                message: `Failed to initialize ${isGoogle ? 'Gemini' : isAnthropic ? 'Claude' : isOpenAI ? 'GPT-5' : isKimiGroq ? 'Kimi (Groq)' : 'Groq'} streaming: ${streamError.message}` 
+                message: `Failed to initialize ${isGoogle ? 'Gemini' : isAnthropic ? 'Claude' : isOpenAI ? 'GPT-5' : isGroq ? 'Groq' : 'AI'} streaming: ${streamError.message}` 
               });
               
               // If this is a Google model error, provide helpful info
