@@ -26,10 +26,12 @@ export class E2BProvider extends SandboxProvider {
 
   async createSandbox(): Promise<SandboxInfo> {
     try {
+      console.log('[E2BProvider] Starting sandbox creation...');
       
       // Kill existing sandbox if any
       if (this.sandbox) {
         try {
+          console.log('[E2BProvider] Killing existing sandbox...');
           await this.sandbox.kill();
         } catch (e) {
           console.error('Failed to close existing sandbox:', e);
@@ -40,11 +42,21 @@ export class E2BProvider extends SandboxProvider {
       // Clear existing files tracking
       this.existingFiles.clear();
 
+      // Check API key
+      const apiKey = this.config.e2b?.apiKey || process.env.E2B_API_KEY;
+      if (!apiKey) {
+        throw new Error('E2B API key is not configured');
+      }
+      
+      console.log('[E2BProvider] Creating E2B sandbox with API key:', apiKey.substring(0, 10) + '...');
+
       // Create base sandbox
       this.sandbox = await Sandbox.create({ 
-        apiKey: this.config.e2b?.apiKey || process.env.E2B_API_KEY,
+        apiKey,
         timeoutMs: this.config.e2b?.timeoutMs || appConfig.e2b.timeoutMs
       });
+      
+      console.log('[E2BProvider] E2B sandbox created successfully');
       
       const sandboxId = (this.sandbox as any).sandboxId || Date.now().toString();
       const host = (this.sandbox as any).getHost(appConfig.e2b.vitePort);

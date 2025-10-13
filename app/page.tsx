@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useUser, useClerk } from "@clerk/nextjs";
 import { appConfig } from '@/config/app.config';
 import { toast } from "sonner";
+import SubscriptionSection from "@/components/SubscriptionSection";
 
 // Import shared components
 import { Connector } from "@/components/shared/layout/curvy-rect";
@@ -21,14 +23,7 @@ import HomeHeroTitle from "@/components/app/(home)/sections/hero/Title/Title";
 import HeroInputSubmitButton from "@/components/app/(home)/sections/hero-input/Button/Button";
 // import Globe from "@/components/app/(home)/sections/hero-input/_svg/Globe";
 
-// Import header components
-import HeaderBrandKit from "@/components/shared/header/BrandKit/BrandKit";
-import HeaderWrapper from "@/components/shared/header/Wrapper/Wrapper";
-import HeaderDropdownWrapper from "@/components/shared/header/Dropdown/Wrapper/Wrapper";
-import GithubIcon from "@/components/shared/header/Github/_svg/GithubIcon";
-import ButtonUI from "@/components/ui/shadcn/button";
-import ByteAIIcon from "@/components/ByteAIIcon";
-import ByteAILogo from "@/components/ByteAILogo";
+
 
 interface SearchResult {
   url: string;
@@ -52,6 +47,100 @@ export default function HomePage() {
   const [showInstructionsForIndex, setShowInstructionsForIndex] = useState<number | null>(null);
   const [additionalInstructions, setAdditionalInstructions] = useState<string>('');
   const router = useRouter();
+  
+  // Clerk authentication hooks
+  const { isSignedIn, isLoaded } = useUser();
+  const { redirectToSignIn } = useClerk();
+
+  // Check for pending prompt after login
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      const pendingPrompt = sessionStorage.getItem('pendingPrompt');
+      const pendingStyle = sessionStorage.getItem('pendingStyle');
+      const pendingModel = sessionStorage.getItem('pendingModel');
+      const pendingInstructions = sessionStorage.getItem('pendingInstructions');
+      const pendingResult = sessionStorage.getItem('pendingResult');
+      
+      if (pendingPrompt) {
+        // Restore the prompt data
+        setUrl(pendingPrompt);
+        if (pendingStyle) setSelectedStyle(pendingStyle);
+        if (pendingModel) setSelectedModel(pendingModel);
+        if (pendingInstructions) setAdditionalInstructions(pendingInstructions);
+        
+        // Clear pending data
+        sessionStorage.removeItem('pendingPrompt');
+        sessionStorage.removeItem('pendingStyle');
+        sessionStorage.removeItem('pendingModel');
+        sessionStorage.removeItem('pendingInstructions');
+        sessionStorage.removeItem('pendingResult');
+        
+        // Execute the prompt
+        toast.success("Welcome back! Executing your prompt...");
+        setTimeout(() => {
+          // If there was a pending result, handle it
+          if (pendingResult) {
+            try {
+              const result = JSON.parse(pendingResult);
+              handleSubmitAfterAuth(result.url, pendingStyle || undefined, pendingModel || undefined, pendingInstructions || undefined, result);
+            } catch (e) {
+              handleSubmitAfterAuth(pendingPrompt, pendingStyle || undefined, pendingModel || undefined, pendingInstructions || undefined);
+            }
+          } else {
+            handleSubmitAfterAuth(pendingPrompt, pendingStyle || undefined, pendingModel || undefined, pendingInstructions || undefined);
+          }
+        }, 1000);
+      }
+    }
+  }, [isLoaded, isSignedIn]);
+
+  // Helper function to execute prompt after authentication
+  const handleSubmitAfterAuth = async (prompt: string, style?: string, model?: string, instructions?: string, result?: SearchResult) => {
+    // Increment app generation counter
+    try {
+      const { SubscriptionManager } = await import('@/lib/subscription');
+      const { user } = await import('@clerk/nextjs');
+      const currentUser = user;
+      
+      if (isSignedIn && currentUser?.id) {
+        await SubscriptionManager.incrementAppGeneration(currentUser.id);
+      }
+    } catch (error) {
+      console.error('Error tracking app generation:', error);
+    }
+
+    // If there's a search result, handle it directly
+    if (result) {
+      sessionStorage.setItem('targetUrl', result.url);
+      sessionStorage.setItem('selectedStyle', style || selectedStyle);
+      sessionStorage.setItem('selectedModel', model || selectedModel);
+      sessionStorage.setItem('autoStart', 'true');
+      if (result.markdown) {
+        sessionStorage.setItem('siteMarkdown', result.markdown);
+      }
+      if (instructions) {
+        sessionStorage.setItem('additionalInstructions', instructions);
+      }
+      router.push('/generation');
+      return;
+    }
+
+    if (isURL(prompt)) {
+      sessionStorage.setItem('targetUrl', prompt);
+      sessionStorage.setItem('selectedStyle', style || selectedStyle);
+      sessionStorage.setItem('selectedModel', model || selectedModel);
+      sessionStorage.setItem('autoStart', 'true');
+      if (instructions) {
+        sessionStorage.setItem('additionalInstructions', instructions);
+      }
+      router.push('/generation');
+    } else {
+      // For search terms, trigger search
+      performSearch(prompt);
+      setHasSearched(true);
+      setShowSearchTiles(true);
+    }
+  };
   
   // Simple URL validation
   const validateUrl = (urlString: string) => {
@@ -89,6 +178,58 @@ export default function HomePage() {
     if (!inputValue) {
       toast.error("Please enter a URL or search term");
       return;
+    }
+
+    // Check if user is authenticated
+    if (!isLoaded) {
+      toast.error("Loading authentication...");
+      return;
+    }
+
+    if (!isSignedIn) {
+      // Store the prompt and settings for after login
+      sessionStorage.setItem('pendingPrompt', inputValue);
+      sessionStorage.setItem('pendingStyle', selectedStyle);
+      sessionStorage.setItem('pendingModel', selectedModel);
+      if (additionalInstructions.trim()) {
+        sessionStorage.setItem('pendingInstructions', additionalInstructions);
+      }
+      
+      // If it's a selected result, also store that
+      if (selectedResult) {
+        sessionStorage.setItem('pendingResult', JSON.stringify(selectedResult));
+      }
+      
+      toast.info("Please sign in to continue with your prompt");
+      
+      // Redirect to sign in using Clerk's method
+      redirectToSignIn({
+        redirectUrl: window.location.href
+      });
+      return;
+    }
+
+    // Check subscription limits
+    try {
+      const { SubscriptionManager } = await import('@/lib/subscription');
+      const { user } = await import('@clerk/nextjs');
+      const currentUser = user;
+      
+      if (currentUser?.id) {
+        const canGenerate = await SubscriptionManager.canGenerateApp(currentUser.id);
+        
+        if (!canGenerate.canGenerate) {
+          toast.error(canGenerate.reason || "Cannot generate app at this time");
+          // Scroll to subscription section
+          const subscriptionSection = document.querySelector('[data-subscription-section]');
+          if (subscriptionSection) {
+            subscriptionSection.scrollIntoView({ behavior: 'smooth' });
+          }
+          return;
+        }
+      }
+    } catch (error) {
+      console.error('Error checking subscription:', error);
     }
     
     // If it's a search result being selected, fade out and redirect
@@ -202,37 +343,7 @@ export default function HomePage() {
   return (
     <HeaderProvider>
       <div className="min-h-screen bg-black">
-        {/* Header/Navigation Section */}
-        <HeaderDropdownWrapper />
 
-        <div className="sticky top-0 left-0 w-full z-[101] bg-black header">
-          <div className="absolute top-0 cmw-container border-x border-border-faint h-full pointer-events-none" />
-          <div className="h-1 bg-border-faint w-full left-0 -bottom-1 absolute" />
-          <div className="cmw-container absolute h-full pointer-events-none top-0">
-            <Connector className="absolute -left-[10.5px] -bottom-11" />
-            <Connector className="absolute -right-[10.5px] -bottom-11" />
-          </div>
-
-          <HeaderWrapper>
-            <div className="max-w-[900px] mx-auto w-full flex justify-between items-center">
-              <div className="flex gap-24 items-center">
-                <HeaderBrandKit />
-              </div>
-              <div className="flex gap-8">
-                <a
-                  className="contents"
-                  href="https://zehanxtech.com"
-                  target="_blank"
-                >
-                  <ButtonUI variant="tertiary">
-                    <ByteAIIcon className="w-4 h-4" />
-                    Zehanx Technologies
-                  </ButtonUI>
-                </a>
-              </div>
-            </div>
-          </HeaderWrapper>
-        </div>
 
         {/* Hero Section */}
         <section className="overflow-x-clip" id="home-hero">
@@ -255,6 +366,8 @@ export default function HomePage() {
               >
                 Built by Zehanx Technologies
               </Link>
+
+
             </div>
           </div>
 
@@ -701,6 +814,11 @@ export default function HomePage() {
             )}
           </section>
         )}
+
+        {/* Subscription Section */}
+        <div data-subscription-section>
+          <SubscriptionSection />
+        </div>
 
       </div>
 

@@ -51,47 +51,41 @@ export const appConfig = {
   // AI Model Configuration
   ai: {
     // Default AI model - Using Groq for fast inference
-    defaultModel: 'groq/llama-3.3-70b-versatile',
+    defaultModel: 'llama-3.1-70b-versatile',
     
-    // Available models - Prioritizing Groq models
+    // Available models - Only Groq models
     availableModels: [
-      'groq/llama-3.3-70b-versatile',
-      'groq/llama-3.1-70b-versatile', 
-      'groq/mixtral-8x7b-32768',
-      'moonshotai/kimi-k2-instruct-0905',
-      'anthropic/claude-sonnet-4-20250514',
-      'openai/gpt-5',
-      'google/gemini-2.0-flash-exp'
+      'llama-3.1-70b-versatile',
+      'llama-3.1-8b-instant', 
+      'mixtral-8x7b-32768',
+      'gemma2-9b-it'
     ],
     
     // Model display names
     modelDisplayNames: {
-      'groq/llama-3.3-70b-versatile': 'Llama 3.3 70B (Groq)',
-      'groq/llama-3.1-70b-versatile': 'Llama 3.1 70B (Groq)',
-      'groq/mixtral-8x7b-32768': 'Mixtral 8x7B (Groq)',
-      'moonshotai/kimi-k2-instruct-0905': 'Kimi K2 (Groq)',
-      'anthropic/claude-sonnet-4-20250514': 'Sonnet 4',
-      'openai/gpt-5': 'GPT-5',
-      'google/gemini-2.0-flash-exp': 'Gemini 2.0 Flash (Experimental)'
+      'llama-3.1-70b-versatile': 'Llama 3.1 70B (Most Capable)',
+      'llama-3.1-8b-instant': 'Llama 3.1 8B (Fast)',
+      'mixtral-8x7b-32768': 'Mixtral 8x7B (Code Expert)',
+      'gemma2-9b-it': 'Gemma 2 9B (Instruction Tuned)'
     } as Record<string, string>,
     
-    // Model API configuration - Groq provider settings
+    // Model API configuration - All Groq provider
     modelApiConfig: {
-      'groq/llama-3.3-70b-versatile': {
+      'llama-3.1-70b-versatile': {
         provider: 'groq',
-        model: 'llama-3.3-70b-versatile'
-      },
-      'groq/llama-3.1-70b-versatile': {
-        provider: 'groq', 
         model: 'llama-3.1-70b-versatile'
       },
-      'groq/mixtral-8x7b-32768': {
+      'llama-3.1-8b-instant': {
+        provider: 'groq', 
+        model: 'llama-3.1-8b-instant'
+      },
+      'mixtral-8x7b-32768': {
         provider: 'groq',
         model: 'mixtral-8x7b-32768'
       },
-      'moonshotai/kimi-k2-instruct-0905': {
+      'gemma2-9b-it': {
         provider: 'groq',
-        model: 'moonshotai/kimi-k2-instruct-0905'
+        model: 'gemma2-9b-it'
       }
     },
     

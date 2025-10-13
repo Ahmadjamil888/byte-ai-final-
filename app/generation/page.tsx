@@ -24,6 +24,9 @@ import {
 } from '@/lib/icons';
 import { motion } from 'framer-motion';
 import CodeApplicationProgress, { type CodeApplicationState } from '@/components/CodeApplicationProgress';
+import UserProgressDisplay from '@/components/UserProgressDisplay';
+import LimitReachedModal from '@/components/LimitReachedModal';
+import AIModelSelector from '@/components/AIModelSelector';
 
 interface SandboxData {
   sandboxId: string;
@@ -91,6 +94,9 @@ function AISandboxPage() {
   const [sandboxFiles, setSandboxFiles] = useState<Record<string, string>>({});
   const [hasInitialSubmission, setHasInitialSubmission] = useState<boolean>(false);
   const [fileStructure, setFileStructure] = useState<string>('');
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  const [limitMessage, setLimitMessage] = useState('');
+  const [userProgress, setUserProgress] = useState<any>(null);
   
   const [conversationContext, setConversationContext] = useState<{
     scrapedWebsites: Array<{ url: string; content: any; timestamp: Date }>;
@@ -580,8 +586,34 @@ Tip: I automatically detect and install npm packages from your code imports (lik
           }
         }, 100);
         
+        // Progress display no longer needed
+        
         // Return the sandbox data so it can be used immediately
         return data;
+      } else if (data.limitReached) {
+        // Handle subscription limit reached
+        const limitMsg = data.error || 'App generation limit reached';
+        
+        // Fetch user progress for the modal
+        try {
+          const progressResponse = await fetch('/api/check-generation-limit');
+          const progressData = await progressResponse.json();
+          setUserProgress(progressData.progress);
+        } catch (error) {
+          console.error('Failed to fetch user progress:', error);
+        }
+        
+        setLimitMessage(limitMsg);
+        setShowLimitModal(true);
+        
+        addChatMessage(`⚠️ ${limitMsg}`, 'system');
+        
+        // Show upgrade prompt for trial users
+        if (limitMsg.includes('Trial')) {
+          addChatMessage('🚀 Ready to create more apps? Upgrade to Bronze plan for 20 apps per month, or Silver for 50 apps per month!', 'system');
+        }
+        
+        throw new Error(limitMsg);
       } else {
         throw new Error(data.error || 'Unknown error');
       }
@@ -2617,6 +2649,24 @@ Tip: I automatically detect and install npm packages from your code imports (lik
   const startGeneration = async () => {
     if (!homeUrlInput.trim()) return;
     
+    // Check generation limits before starting
+    try {
+      const limitResponse = await fetch('/api/check-generation-limit');
+      const limitData = await limitResponse.json();
+      
+      if (!limitData.canGenerate) {
+        setUserProgress(limitData.progress);
+        setLimitMessage(limitData.reason || 'Generation limit reached');
+        setShowLimitModal(true);
+        addChatMessage(`⚠️ ${limitData.reason}`, 'system');
+        return;
+      }
+    } catch (error) {
+      console.error('Failed to check generation limits:', error);
+      addChatMessage('Failed to check generation limits. Please try again.', 'system');
+      return;
+    }
+    
     setHomeScreenFading(true);
     
     // Set immediate loading state for better UX
@@ -3076,11 +3126,56 @@ Focus on the key sections and content, making it clean and modern.`;
       <div className="bg-gray-900 py-[15px] py-[8px] border-b border-orange-500/30 flex items-center justify-between shadow-sm">
         <HeaderBrandKit />
         <div className="flex items-center gap-2">
-          {/* Model Selector - Left side */}
-          <select
+          {/* User Progress Display */}
+          <UserProgressDisplay 
+            onProjectSelect={(project) => {
+              // Load project into current session
+              if (project.sandboxId && project.url) {
+                setSandboxData({
+                  sandboxId: project.sandboxId,
+                  url: project.url
+                });
+                updateStatus('Project loaded', true);
+                addChatMessage(`Loaded project: ${project.name}`, 'system');
+                
+                // Update iframe
+                if (iframeRef.current) {
+                  iframeRef.current.src = project.url;
+                }
+              }
+            }}
+          />
+          
+          {/* Sandbox URL Display - Show when sandbox is available */}
+          {sandboxData?.url && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-800 border border-green-500/30 rounded-lg">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-sm text-gray-300">App URL:</span>
+              <a 
+                href={sandboxData.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-sm text-green-400 hover:text-green-300 transition-colors underline"
+                title="Open your app in a new tab"
+              >
+                {sandboxData.url.replace('https://', '').split('/')[0]}
+              </a>
+              <button
+                onClick={() => navigator.clipboard.writeText(sandboxData.url)}
+                className="p-1 hover:bg-gray-700 rounded transition-colors"
+                title="Copy URL to clipboard"
+              >
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </button>
+            </div>
+          )}
+          
+          {/* AI Model Selector */}
+          <AIModelSelector
             value={aiModel}
-            onChange={(e) => {
-              const newModel = e.target.value;
+            onChange={(newModel) => {
               setAiModel(newModel);
               const params = new URLSearchParams(searchParams);
               params.set('model', newModel);
@@ -3089,14 +3184,7 @@ Focus on the key sections and content, making it clean and modern.`;
               }
               router.push(`/generation?${params.toString()}`);
             }}
-            className="px-3 py-1.5 text-sm text-white bg-gray-800 border border-orange-500/30 rounded-lg focus:outline-none focus:border-orange-500 transition-colors"
-          >
-            {appConfig.ai.availableModels.map(model => (
-              <option key={model} value={model}>
-                {appConfig.ai.modelDisplayNames?.[model] || model}
-              </option>
-            ))}
-          </select>
+          />
           <button 
             onClick={() => createSandbox()}
             className="p-8 rounded-lg transition-colors bg-gray-800 border border-orange-500/30 text-white hover:bg-gray-700"
@@ -3522,8 +3610,13 @@ Focus on the key sections and content, making it clean and modern.`;
         </div>
       </div>
 
-
-
+      {/* Limit Reached Modal */}
+      <LimitReachedModal
+        isOpen={showLimitModal}
+        onClose={() => setShowLimitModal(false)}
+        progress={userProgress}
+        limitMessage={limitMessage}
+      />
 
     </div>
     </HeaderProvider>
