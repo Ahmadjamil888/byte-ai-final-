@@ -55,8 +55,8 @@ export default function SubscriptionGuard({
     const run = async () => {
       if (!progress) return;
 
-      // Check if user needs any paid plan
-      if (requiresAnyPaid && progress.subscriptionStatus === 'trial') {
+      // Check if user needs any paid plan (treat 'free' as trial)
+      if (requiresAnyPaid && progress.subscriptionStatus === 'free') {
         setShowUpgradeModal(true);
         onUpgradeRequired?.();
         return;
@@ -77,14 +77,14 @@ export default function SubscriptionGuard({
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div className="bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4">
           <h3 className="text-2xl font-bold text-white mb-4">
-            {progress?.subscriptionStatus === 'trial' && requiresAnyPaid
+            {progress?.subscriptionStatus === 'free' && requiresAnyPaid
               ? 'Premium Feature'
               : 'Upgrade Required'
             }
           </h3>
           
           <p className="text-gray-300 mb-6">
-            {progress?.subscriptionStatus === 'trial' && requiresAnyPaid
+            {progress?.subscriptionStatus === 'free' && requiresAnyPaid
               ? 'This feature requires a paid subscription.'
               : progress?.subscriptionStatus === 'expired'
               ? 'Your trial has expired. Please upgrade to continue generating apps.'
