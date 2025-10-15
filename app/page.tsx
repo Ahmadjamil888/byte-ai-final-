@@ -49,7 +49,7 @@ export default function HomePage() {
   const router = useRouter();
   
   // Clerk authentication hooks
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded, user } = useUser();
   const { redirectToSignIn } = useClerk();
 
   // Check for pending prompt after login
@@ -99,11 +99,8 @@ export default function HomePage() {
     // Increment app generation counter
     try {
       const { SubscriptionManager } = await import('@/lib/subscription');
-      const { user } = await import('@clerk/nextjs');
-      const currentUser = user;
-      
-      if (isSignedIn && currentUser?.id) {
-        await SubscriptionManager.incrementAppGeneration(currentUser.id);
+      if (isSignedIn && user?.id) {
+        await SubscriptionManager.incrementAppGeneration(user.id);
       }
     } catch (error) {
       console.error('Error tracking app generation:', error);
@@ -212,11 +209,8 @@ export default function HomePage() {
     // Check subscription limits
     try {
       const { SubscriptionManager } = await import('@/lib/subscription');
-      const { user } = await import('@clerk/nextjs');
-      const currentUser = user;
-      
-      if (currentUser?.id) {
-        const canGenerate = await SubscriptionManager.canGenerateApp(currentUser.id);
+      if (user?.id) {
+        const canGenerate = await SubscriptionManager.canGenerateApp(user.id);
         
         if (!canGenerate.canGenerate) {
           toast.error(canGenerate.reason || "Cannot generate app at this time");
