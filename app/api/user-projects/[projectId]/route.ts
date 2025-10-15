@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { clerkClient } from '@clerk/nextjs/server';
 import { UserProject } from '@/types/subscription';
 
 export async function PUT(
-  req: NextRequest,
+  req: Request,
   { params }: { params: { projectId: string } }
 ) {
   try {
@@ -54,7 +54,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: NextRequest,
+  _req: Request,
   { params }: { params: { projectId: string } }
 ) {
   try {
