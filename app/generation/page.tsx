@@ -27,7 +27,6 @@ import CodeApplicationProgress, { type CodeApplicationState } from '@/components
 import UserProgressDisplay from '@/components/UserProgressDisplay';
 import LimitReachedModal from '@/components/LimitReachedModal';
 import AIModelSelector from '@/components/AIModelSelector';
-import AIModelSelector from '@/components/AIModelSelector';
 
 interface SandboxData {
   sandboxId: string;

@@ -1,0 +1,93 @@
+// Prisma schema for Byte AI SaaS
+// Database: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  // Clerk user ID as primary key
+  id              String        @id
+  email           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Usage tracking
+  totalAppsGenerated     Int       @default(0)
+  currentPlanAppsGenerated Int     @default(0)
+  subscriptionStatus     SubscriptionStatus @default(FREE)
+  trialStartDate         DateTime?
+  lastAppGeneratedAt     DateTime?
+
+  // Relations
+  projects        Project[]
+  apiKeys         ApiKey[]
+  subscriptions   Subscription[]
+
+  @@index([email])
+}
+
+enum SubscriptionStatus {
+  FREE
+  PRO
+  PREMIUM
+  EXPIRED
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String
+  sandboxId   String?
+  url         String?
+  planUsed    String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model ApiKey {
+  id          String   @id @default(cuid())
+  userId      String
+  provider    String   // e.g., "openai", "gemini", "groq", "e2b"
+  name        String   // display label
+  encryptedKey String  // ciphertext
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, provider, name])
+  @@index([userId])
+}
+
+model Subscription {
+  id                String   @id @default(cuid())
+  userId            String
+  stripeCustomerId  String?
+  stripeSubId       String?
+  stripePriceId     String?
+  status            String?  // active, trialing, canceled, past_due, etc.
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  cancelAtPeriodEnd  Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([stripeCustomerId])
+  @@index([stripeSubId])
+}

@@ -1,14 +1,15 @@
 'use client';
 
-import { usicingTable } from '@clerk/nextjs';
+import PricingTable from '@/components/PricingTable';
 import { SUBSCRIPTION_PLANS } from '@/types/subscription';
 import { clerkTheme } from '@/lib/clerk-theme';
 import BlackHoleBackground from '@/components/BlackHoleBackground';
+import { SignedOut, SignInButton } from '@clerk/nextjs';
 
 export default function PricingPage() {
   return (
-    <BlackHoleBackground className="py-20" intensity="medium">
-      <div className="container mx-auto px-4">
+    <BlackHoleBackground className="py-20 bg-black" intensity="medium">
+      <div className="container mx-auto px-4 text-white">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-orange-400 via-orange-300 to-orange-500 bg-clip-text text-transparent mb-6">
             Choose Your Plan
@@ -16,6 +17,13 @@ export default function PricingPage() {
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
             Unlock the power of AI-driven app generation with our flexible pricing plans
           </p>
+          <SignedOut>
+            <SignInButton>
+              <button className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold shadow-lg shadow-orange-500/20 transition-colors">
+                Sign in to continue
+              </button>
+            </SignInButton>
+          </SignedOut>
           
           {/* Test Mode Notice */}
           <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500/20 to-orange-600/20 border border-orange-500/40 rounded-full mb-8 backdrop-blur-sm">
@@ -83,22 +91,11 @@ export default function PricingPage() {
                 </ul>
                 
                 <button 
-                  onClick={async () => {
-                    if (plan.id !== 'free') {
-                      try {
-                        const response = await fetch('/api/test-upgrade', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ planId: plan.id })
-                        });
-                        
-                        if (response.ok) {
-                          alert(`Successfully upgraded to ${plan.name}! (Test Mode)`);
-                          window.location.reload();
-                        }
-                      } catch (error) {
-                        console.error('Upgrade failed:', error);
-                      }
+                  onClick={() => {
+                    if (plan.id === 'free') return;
+                    const el = document.getElementById('clerk-pricing');
+                    if (el) {
+                      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                   }}
                   className={`w-full py-3 px-6 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 ${
@@ -118,7 +115,7 @@ export default function PricingPage() {
         </div>
         
         {/* Clerk Pricing Table with Custom Theme */}
-        <div className="max-w-4xl mx-auto">
+        <div id="clerk-pricing" className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-semibold text-white mb-2">Secure Checkout</h2>
             <p className="text-gray-400">Powered by Clerk - Industry standard security</p>

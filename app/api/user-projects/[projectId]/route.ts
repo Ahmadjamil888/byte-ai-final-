@@ -26,7 +26,6 @@ export async function PUT(
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
 
-    // Update project
     projects[projectIndex] = {
       ...projects[projectIndex],
       ...(name && { name }),
@@ -76,7 +75,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
 
-    // Remove project
     projects.splice(projectIndex, 1);
 
     await client.users.updateUserMetadata(userId, {

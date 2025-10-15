@@ -49,14 +49,14 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     price: 19,
     duration: 'per month',
     features: [
-      '25 app generations per month',
+      '20 app generations per month',
       'All templates & themes',
       'Priority support',
       'Custom styling options',
       'Export source code',
       'Advanced AI models'
     ],
-    appLimit: 25
+    appLimit: 20
   },
   {
     id: 'premium',

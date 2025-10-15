@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { clerkClient } from '@clerk/nextjs/server';
 import { UserProject } from '@/types/subscription';
+import { SubscriptionManagerServer } from '@/lib/subscription-server';
 
 export async function GET(req: NextRequest) {
   try {
@@ -15,7 +16,6 @@ export async function GET(req: NextRequest) {
     const user = await client.users.getUser(userId);
     const projects = (user.privateMetadata?.projects as UserProject[]) || [];
 
-    // Sort by updatedAt descending (most recent first)
     const sortedProjects = projects.sort((a, b) => 
       new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
@@ -42,6 +42,12 @@ export async function POST(req: NextRequest) {
 
     if (!name || !description) {
       return NextResponse.json({ error: 'Name and description are required' }, { status: 400 });
+    }
+
+    // Enforce plan limits server-side (free tier -> only 1 active project)
+    const can = await SubscriptionManagerServer.canGenerateApp(userId);
+    if (!can.canGenerate) {
+      return NextResponse.json({ error: can.reason || 'Plan limit reached' }, { status: 403 });
     }
 
     const client = await clerkClient();

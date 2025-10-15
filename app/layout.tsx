@@ -6,6 +6,7 @@ import {
   SignedIn,
   SignedOut,
   UserButton,
+  RedirectToSignIn,
 } from "@clerk/nextjs";
 import { clerkTheme } from "@/lib/clerk-theme";
 
@@ -69,9 +70,13 @@ export default function RootLayout({
     >
       <html lang="en">
         <body
-          className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} ${robotoMono.variable} font-sans antialiased`}
+          className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} ${robotoMono.variable} font-sans antialiased bg-black text-white`}
         >
           <HeaderProvider>
+            {/* Force sign-in globally */}
+            <SignedOut>
+              <RedirectToSignIn />
+            </SignedOut>
             {/* === HEADER DROPDOWN === */}
             <HeaderDropdownWrapper />
 
