@@ -1,10 +1,8 @@
 "use client";
 
-import { loadStripe } from '@stripe/stripe-js';
-
-// Client-side Stripe instance
-export const getStripe = () => {
-  return loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+// Clerk-only build: provide a no-op Stripe loader so builds don't require '@stripe/stripe-js'
+export const getStripe = async () => {
+  return null as any;
 };
 
 // Client-safe price IDs
