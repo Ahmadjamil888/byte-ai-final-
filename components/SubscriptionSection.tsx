@@ -31,12 +31,12 @@ export default function SubscriptionSection() {
       if (progress) {
         setUserProgress(progress);
       } else {
-        // Initialize trial for new users
+        // Initialize free (trial) for new users
         const initialProgress: UserProgress = {
           userId: user.id,
           totalAppsGenerated: 0,
           currentPlanAppsGenerated: 0,
-          subscriptionStatus: 'trial',
+          subscriptionStatus: 'free',
           trialStartDate: new Date(),
         };
         setUserProgress(initialProgress);
@@ -97,7 +97,7 @@ export default function SubscriptionSection() {
               Current Plan: <span className="text-white font-medium">{currentPlan.name}</span>
             </div>
             
-            {userProgress?.subscriptionStatus === 'trial' && (
+            {userProgress?.subscriptionStatus === 'free' && (
               <div className="text-sm text-orange-400 mt-2">
                 {trialDaysRemaining > 0 
                   ? `${trialDaysRemaining} days remaining in trial`
