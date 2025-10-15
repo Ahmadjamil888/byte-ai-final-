@@ -24,9 +24,9 @@ export default function SubscriptionGuard({
   const { progress, canGenerateApp } = useSubscription();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
-  // If a specific plan is required, use Clerk's Protect component
+  let gatedChildren = children;
   if (requiresPlan) {
-    return (
+    gatedChildren = (
       <Protect
         plan={requiresPlan}
         fallback={
@@ -38,7 +38,7 @@ export default function SubscriptionGuard({
               This feature requires a {requiresPlan} subscription or higher.
             </p>
             <button
-              onClick={() => window.location.href = '/pricing'}
+              onClick={() => (window.location.href = '/pricing')}
               className="bg-orange-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-orange-600 transition-colors"
             >
               Upgrade Now
@@ -51,28 +51,26 @@ export default function SubscriptionGuard({
     );
   }
 
-  const checkAccess = async () => {
-    if (!progress) return;
-
-    // Check if user needs any paid plan
-    if (requiresAnyPaid && progress.subscriptionStatus === 'trial') {
-      setShowUpgradeModal(true);
-      onUpgradeRequired?.();
-      return;
-    }
-
-    const result = await canGenerateApp();
-    if (!result.canGenerate) {
-      setShowUpgradeModal(true);
-      onUpgradeRequired?.();
-    }
-  };
-
   useEffect(() => {
-    if (progress) {
-      checkAccess();
-    }
-  }, [progress, requiresAnyPaid]);
+    const run = async () => {
+      if (!progress) return;
+
+      // Check if user needs any paid plan
+      if (requiresAnyPaid && progress.subscriptionStatus === 'trial') {
+        setShowUpgradeModal(true);
+        onUpgradeRequired?.();
+        return;
+      }
+
+      const result = await canGenerateApp();
+      if (!result.canGenerate) {
+        setShowUpgradeModal(true);
+        onUpgradeRequired?.();
+      }
+    };
+
+    run();
+  }, [progress, requiresAnyPaid, canGenerateApp, onUpgradeRequired]);
 
   if (showUpgradeModal) {
     return (
@@ -114,5 +112,5 @@ export default function SubscriptionGuard({
     );
   }
 
-  return <>{children}</>;
+  return <>{gatedChildren}</>;
 }
