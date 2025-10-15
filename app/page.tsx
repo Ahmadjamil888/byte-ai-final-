@@ -98,9 +98,12 @@ export default function HomePage() {
   const handleSubmitAfterAuth = async (prompt: string, style?: string, model?: string, instructions?: string, result?: SearchResult) => {
     // Increment app generation counter
     try {
-      const { SubscriptionManager } = await import('@/lib/subscription');
       if (isSignedIn && user?.id) {
-        await SubscriptionManager.incrementAppGeneration(user.id);
+        await fetch('/api/increment-generation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ appName: 'Generated App', prompt })
+        });
       }
     } catch (error) {
       console.error('Error tracking app generation:', error);
@@ -208,13 +211,11 @@ export default function HomePage() {
 
     // Check subscription limits
     try {
-      const { SubscriptionManager } = await import('@/lib/subscription');
       if (user?.id) {
-        const canGenerate = await SubscriptionManager.canGenerateApp(user.id);
-        
-        if (!canGenerate.canGenerate) {
-          toast.error(canGenerate.reason || "Cannot generate app at this time");
-          // Scroll to subscription section
+        const res = await fetch('/api/check-generation-limit');
+        const data = await res.json();
+        if (!res.ok || !data.canGenerate) {
+          toast.error(data.reason || 'Cannot generate app at this time');
           const subscriptionSection = document.querySelector('[data-subscription-section]');
           if (subscriptionSection) {
             subscriptionSection.scrollIntoView({ behavior: 'smooth' });
