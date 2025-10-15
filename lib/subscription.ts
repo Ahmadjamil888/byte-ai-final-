@@ -17,7 +17,8 @@ export class SubscriptionManager {
   }
 
   static isTrialExpired(progress: UserProgress): boolean {
-    if (progress.subscriptionStatus !== 'trial' || !progress.trialStartDate) {
+    // Treat 'free' as the trial plan in our canonical types
+    if (progress.subscriptionStatus !== 'free' || !progress.trialStartDate) {
       return false;
     }
     
@@ -34,7 +35,7 @@ export class SubscriptionManager {
     
     // Check app limits
     if (currentPlan.appLimit !== null && progress.currentPlanAppsGenerated >= currentPlan.appLimit) {
-      if (progress.subscriptionStatus === 'trial') {
+      if (progress.subscriptionStatus === 'free') {
         return { canGenerate: false, reason: 'Trial limit reached. Please upgrade to continue.' };
       } else {
         return { canGenerate: false, reason: 'Monthly limit reached. Upgrade to a higher plan or wait for next billing cycle.' };

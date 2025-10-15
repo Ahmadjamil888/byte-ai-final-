@@ -3,16 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { SubscriptionManager } from '@/lib/subscription';
+import { UserProgress } from '@/types/subscription';
 import { toast } from 'sonner';
 
-interface UserProgress {
-  userId: string;
-  totalAppsGenerated: number;
-  currentPlanAppsGenerated: number;
-  subscriptionStatus: 'trial' | 'bronze' | 'silver' | 'gold' | 'expired';
-  trialStartDate?: Date;
-  lastAppGeneratedAt?: Date;
-}
+// Use canonical UserProgress type from '@/types/subscription'
 
 interface GenerationCheck {
   canGenerate: boolean;

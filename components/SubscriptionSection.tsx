@@ -3,18 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useUser, useOrganization, useOrganizationList } from '@clerk/nextjs';
 import { PricingTable } from '@clerk/nextjs';
-import { SUBSCRIPTION_PLANS } from '@/types/subscription';
+import { SUBSCRIPTION_PLANS, UserProgress } from '@/types/subscription';
 import { SubscriptionManager } from '@/lib/subscription';
 import { toast } from 'sonner';
 
-interface UserProgress {
-  userId: string;
-  totalAppsGenerated: number;
-  currentPlanAppsGenerated: number;
-  subscriptionStatus: 'trial' | 'bronze' | 'silver' | 'gold' | 'expired';
-  trialStartDate?: Date;
-  lastAppGeneratedAt?: Date;
-}
+// Use canonical UserProgress type from '@/types/subscription'
 
 export default function SubscriptionSection() {
   const { user, isLoaded } = useUser();
