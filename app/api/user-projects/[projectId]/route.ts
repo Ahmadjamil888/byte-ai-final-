@@ -5,7 +5,7 @@ import { UserProject } from '@/types/subscription';
 
 export async function PUT(
   req: Request,
-  { params }: { params: { projectId: string } }
+  context: any
 ) {
   try {
     const { userId } = await auth();
@@ -14,6 +14,7 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const params = context?.params || {};
     const { name, description, sandboxId, url, isActive } = await req.json();
     const projectId = params.projectId;
 
@@ -55,7 +56,7 @@ export async function PUT(
 
 export async function DELETE(
   _req: Request,
-  { params }: { params: { projectId: string } }
+  context: any
 ) {
   try {
     const { userId } = await auth();
@@ -64,6 +65,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const params = context?.params || {};
     const projectId = params.projectId;
 
     const client = await clerkClient();
