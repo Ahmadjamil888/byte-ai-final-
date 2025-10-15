@@ -29,13 +29,11 @@ export default function UserDashboard() {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-white">Your Account</h3>
         <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-          progress.subscriptionStatus === 'trial' 
+          progress.subscriptionStatus === 'free'
             ? 'bg-blue-500/20 text-blue-400'
-            : progress.subscriptionStatus === 'bronze'
+            : progress.subscriptionStatus === 'pro'
             ? 'bg-orange-500/20 text-orange-400'
-            : progress.subscriptionStatus === 'silver'
-            ? 'bg-gray-500/20 text-gray-400'
-            : progress.subscriptionStatus === 'gold'
+            : progress.subscriptionStatus === 'premium'
             ? 'bg-yellow-500/20 text-yellow-400'
             : 'bg-red-500/20 text-red-400'
         }`}>
@@ -62,7 +60,7 @@ export default function UserDashboard() {
         </div>
       </div>
 
-      {progress.subscriptionStatus === 'trial' && (
+      {progress.subscriptionStatus === 'free' && (
         <div className={`p-3 rounded-lg ${
           isTrialExpired 
             ? 'bg-red-500/20 border border-red-500/30' 
@@ -71,14 +69,11 @@ export default function UserDashboard() {
           <div className={`text-sm font-medium ${
             isTrialExpired ? 'text-red-400' : 'text-blue-400'
           }`}>
-            {isTrialExpired 
-              ? 'Trial Expired'
-              : `${trialDaysRemaining} days left in trial`
-            }
+            {isTrialExpired ? 'Trial Expired' : `${trialDaysRemaining} days left in trial`}
           </div>
           {isTrialExpired && (
             <div className="text-xs text-red-300 mt-1">
-              Upgrade to Bronze plan to continue
+              Upgrade to Pro plan to continue
             </div>
           )}
         </div>
@@ -90,10 +85,8 @@ export default function UserDashboard() {
             Monthly limit reached
           </div>
           <div className="text-xs text-orange-300 mt-1">
-            {progress.subscriptionStatus === 'bronze' 
-              ? 'Upgrade to Silver or Gold for more apps'
-              : progress.subscriptionStatus === 'silver'
-              ? 'Upgrade to Gold for unlimited apps'
+            {progress.subscriptionStatus === 'pro' 
+              ? 'Upgrade to Premium for unlimited apps'
               : 'Limit resets next billing cycle'
             }
           </div>
