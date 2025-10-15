@@ -7,7 +7,8 @@ export async function withSubscriptionCheck(
   handler: (req: NextRequest) => Promise<NextResponse>
 ): Promise<NextResponse> {
   try {
-    const { userId } = await auth();
+    const authResult = await auth();
+    const userId = authResult?.userId as string | null;
     
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
