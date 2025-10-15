@@ -2,10 +2,12 @@
 
 import { PricingTable as ClerkPricingTable } from '@clerk/nextjs';
 
-export default function PricingTable() {
+type PricingTableProps = Record<string, any>;
+
+export default function PricingTable(props: PricingTableProps) {
   return (
     <div className="max-w-6xl mx-auto">
-      <ClerkPricingTable />
+      <ClerkPricingTable {...props} />
     </div>
   );
 }
